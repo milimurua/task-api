@@ -1,7 +1,7 @@
 {
-  "name": "store",
+  "name": "node_project",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
@@ -15,7 +15,7 @@
   "devDependencies": {
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
+    "eslint-plugin-prettier": "^5.2.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2"
   }
