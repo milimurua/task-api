@@ -1,16 +1,16 @@
 const { faker } = require('@faker-js/faker');
 
-class TaskServices{
+class TaskService{
     constructor(){
         this.task = [];
         this.generate();
     }
 
     generate(){
-        const limit = size || 10;
+        const limit = 10;
         for (let index = 0; index < limit; index ++){
-            tasks.push({
-                id: faker.datatype.uuid(),
+            this.task.push({
+                id: faker.string.uuid(),
                 name: faker.person.firstName(),
                 day: faker.date.timeZone(),
                 book: faker.book.title(),
@@ -25,11 +25,11 @@ class TaskServices{
     }
 
     find(){
-        return this.products;
+        return this.task;
     }
 
     findOne(id){
-        return this.products.find(item =>item.id === id);
+        return this.task.find(item =>item.id === id);
     }
 
     update(){
@@ -42,4 +42,4 @@ class TaskServices{
 
 }
 
-module.exports = TaskServices;
+module.exports = TaskService;

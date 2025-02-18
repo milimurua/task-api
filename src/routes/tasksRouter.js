@@ -1,22 +1,12 @@
 const express = require('express');
-const { faker } = require('@faker-js/faker')
+const TaskService = require('../services/taskServices');
 
 const router =  express.Router();
+const services = new TaskService();
 
 router.get('/' , (req, res) => {
-    const tasks = [];
-    const { size } = req.query;
-    const limit = size || 10;
-    for (let index = 0; index < limit; index ++){
-        tasks.push({
-            name: faker.person.firstName(),
-            day: faker.date.timeZone(),
-            book: faker.book.title(),
-            task: faker.person.jobTitle(),
-            image: faker.image.avatar(),
-        });
-    }
-    res.json(tasks);
+    const task = services.find();
+    res.json(task);
 })
 
 router.get('/filter', (req,res)=>{
@@ -24,8 +14,15 @@ router.get('/filter', (req,res)=>{
 });
 
 router.get('/:taskId', (req, res) => {
-    const { id } = req.params;
-    if(id === '999') {
+    const { taskId } = req.params;
+    const task = services.findOne(taskId);
+
+    if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json(task);
+    /*if(id === '999') {
         res.status(404).json({
             massage: 'not found'
         })
@@ -34,7 +31,7 @@ router.get('/:taskId', (req, res) => {
         id,
         name: 'task 2',
         items: ['play', 'pet']
-    });
+    });*/
 });
 
 router.post('/', (req, res) => {
