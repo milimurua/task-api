@@ -22,43 +22,25 @@ router.get('/:taskId', (req, res) => {
     }
 
     res.json(task);
-    /*if(id === '999') {
-        res.status(404).json({
-            massage: 'not found'
-        })
-    }
-    res.status(200).json({
-        id,
-        name: 'task 2',
-        items: ['play', 'pet']
-    });*/
 });
 
 router.post('/', (req, res) => {
     const body = req.body;
-    res.status(201).json({
-        message: 'created',
-        data: body
-    });
+    const newTask = services.create(body);
+    res.status(201).json(newTask);
 });
 
 router.patch('/:id', (req, res) => {
     const body = req.body;
     const { id } = req.params;
-    res.json({
-        message: 'update',
-        data: body,
-        id,
-    });
+    const task = services.update(id, body)
+    res.json(task);
 })
 
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    
-    res.json({
-        message: 'delete',
-        id,
-    });
+    const task = services.delete(id)
+    res.json(task);
 })
 
 module.exports = router;

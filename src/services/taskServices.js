@@ -20,8 +20,13 @@ class TaskService{
         }
     }
 
-    create(){
-
+    create(data) {
+        const newTask = {
+            id: faker.string.uuid(),
+            ...data,
+        };
+        this.task.push(newTask);
+        return newTask;
     }
 
     find(){
@@ -32,12 +37,26 @@ class TaskService{
         return this.task.find(item =>item.id === id);
     }
 
-    update(){
-
+    update(id, changes){
+        const index = this.task.findIndex(item =>item.id === id);
+        if(index === -1){
+            throw new Error('task not found');
+        }
+        const task = this.task[index];
+        this.task[index] = {
+            ...task,
+            ...changes
+        };
+        return this.task[index];
     }
 
-    delete(){
-
+    delete(id){
+        const index = this.task.findIndex(item =>item.id === id);
+        if(index === -1){
+            throw new Error('task not found');
+        }
+        this.task.slice(index,1);
+        return{message: true, id};
     }
 
 }
