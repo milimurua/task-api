@@ -4,18 +4,14 @@ const TaskService = require('../services/taskServices');
 const router =  express.Router();
 const services = new TaskService();
 
-router.get('/' , (req, res) => {
-    const task = services.find();
+router.get('/' , async (req, res) => {
+    const task = await services.find();
     res.json(task);
 })
 
-router.get('/filter', (req,res)=>{
-    res.send('im a filter');
-});
-
-router.get('/:taskId', (req, res) => {
+router.get('/:taskId', async (req, res) => {
     const { taskId } = req.params;
-    const task = services.findOne(taskId);
+    const task = await services.findOne(taskId);
 
     if (!task) {
         return res.status(404).json({ message: 'Task not found' });
@@ -24,22 +20,28 @@ router.get('/:taskId', (req, res) => {
     res.json(task);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const body = req.body;
-    const newTask = services.create(body);
+    const newTask = await services.create(body);
     res.status(201).json(newTask);
 });
 
-router.patch('/:id', (req, res) => {
-    const body = req.body;
-    const { id } = req.params;
-    const task = services.update(id, body)
-    res.json(task);
+router.patch('/:id', async (req, res) => {
+    try {
+        const body = req.body;
+        const { id } = req.params;
+        const task = await services.update(id, body)
+        res.json(task);
+    } catch (error) {
+        res.status(404).json({
+            message:error.message
+        });
+    }
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    const task = services.delete(id)
+    const task = await services.delete(id)
     res.json(task);
 })
 
