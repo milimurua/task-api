@@ -1,4 +1,5 @@
 const { faker } = require('@faker-js/faker');
+const boom = require('@hapi/boom');
 
 class TaskService{
     constructor(){
@@ -16,6 +17,7 @@ class TaskService{
                 book: faker.book.title(),
                 task: faker.person.jobTitle(),
                 image: faker.image.avatar(),
+                isBlock: faker.datatype.boolean()
             });
         }
     }
@@ -40,13 +42,20 @@ class TaskService{
     }
 
     async findOne(id){
-        return this.task.find(item =>item.id === id);
+        const task = this.task.find(item =>item.id === id);
+        if(!task){
+            throw boom.notFound('Product not found');
+        } 
+        if(task.isBlock){
+            throw boom.conflict('product is block');
+        }
+        return task;
     }
 
     async update(id, changes){
         const index = this.task.findIndex(item =>item.id === id);
         if(index === -1){
-            throw new Error('task not found');
+           throw boom.notFound('Product not found');
         }
         const task = this.task[index];
         this.task[index] = {
@@ -59,7 +68,7 @@ class TaskService{
     async delete(id){
         const index = this.task.findIndex(item =>item.id === id);
         if(index === -1){
-            throw new Error('task not found');
+            throw boom.notFound('Product not found');
         }
         this.task.slice(index,1);
         return{message: true, id};

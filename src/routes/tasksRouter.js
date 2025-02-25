@@ -9,15 +9,14 @@ router.get('/' , async (req, res) => {
     res.json(task);
 })
 
-router.get('/:taskId', async (req, res) => {
-    const { taskId } = req.params;
-    const task = await services.findOne(taskId);
-
-    if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+router.get('/:taskId', async (req, res, next) => {
+    try{
+        const { taskId } = req.params;
+        const task = await services.findOne(taskId);
+        res.json(task);
+    }catch(error){
+        next(error);
     }
-
-    res.json(task);
 });
 
 router.post('/', async (req, res) => {
@@ -26,23 +25,26 @@ router.post('/', async (req, res) => {
     res.status(201).json(newTask);
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', async (req, res, next) => {
     try {
         const body = req.body;
         const { id } = req.params;
         const task = await services.update(id, body)
         res.json(task);
     } catch (error) {
-        res.status(404).json({
-            message:error.message
-        });
+        next(error);
     }
 })
 
-router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    const task = await services.delete(id)
-    res.json(task);
+router.delete('/:id', async (req, res, next) => {
+    try{
+        const { id } = req.params;
+        const task = await services.delete(id)
+        res.json(task);
+    }catch(error){
+        next(error);
+    }
+    
 })
 
 module.exports = router;
