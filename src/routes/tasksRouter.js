@@ -1,5 +1,7 @@
 const express = require('express');
 const TaskService = require('../services/taskServices');
+const validatorHandler = require('../middlewares/validatorHandler');
+const {createTaskSchema, updateTaskSchema, getTaskSchema}= require('../schemas/taskSchemas');
 
 const router =  express.Router();
 const services = new TaskService();
@@ -9,7 +11,9 @@ router.get('/' , async (req, res) => {
     res.json(task);
 })
 
-router.get('/:taskId', async (req, res, next) => {
+router.get('/:taskId', 
+    validatorHandler(getTaskSchema,'params'),
+    async (req, res, next) => {
     try{
         const { taskId } = req.params;
         const task = await services.findOne(taskId);
@@ -19,13 +23,18 @@ router.get('/:taskId', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', 
+    validatorHandler(createTaskSchema, 'body'),
+    async (req, res) => {
     const body = req.body;
     const newTask = await services.create(body);
     res.status(201).json(newTask);
 });
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', 
+    validatorHandler(updateTaskSchema, 'params'),
+    validatorHandler(updateTaskSchema, 'body'),
+    async (req, res, next) => {
     try {
         const body = req.body;
         const { id } = req.params;
