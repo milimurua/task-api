@@ -1,79 +1,59 @@
 const { faker } = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 
-class TaskService{
-    constructor(){
-        this.task = [];
+class TaskService {
+    constructor() {
+        this.tasks = [];
         this.generate();
     }
 
-    generate(){
-        const limit = 10;
-        for (let index = 0; index < limit; index ++){
-            this.task.push({
+    generate() {
+        for (let i = 0; i < 10; i++) {
+            this.tasks.push({
                 id: faker.string.uuid(),
                 name: faker.person.firstName(),
-                day: faker.date.timeZone(),
-                book: faker.book.title(),
-                task: faker.person.jobTitle(),
+                day: faker.date.future().toISOString().split('T')[0],
+                book: faker.lorem.word(),
+                task: faker.lorem.sentence(),
                 image: faker.image.avatar(),
-                isBlock: faker.datatype.boolean()
+                isBlocked: faker.datatype.boolean()
             });
         }
     }
 
     async create(data) {
         const newTask = {
-            id: faker.string.uuid(),
+            id: faker.string.uuid(), // Generamos automáticamente el id
             ...data,
         };
-        this.task.push(newTask);
+        this.tasks.push(newTask);
         return newTask;
     }
 
-    find(){ 
-        //simular un async
-        return new Promise((resolve, reject) => {
-            setTimeout(()=> {
-                resolve(this.task);
-            })
-        },5000);
-        return this.task;
+    find() {
+        return Promise.resolve(this.tasks);
     }
 
-    async findOne(id){
-        const task = this.task.find(item =>item.id === id);
-        if(!task){
-            throw boom.notFound('Product not found');
-        } 
-        if(task.isBlock){
-            throw boom.conflict('product is block');
-        }
+    async findOne(id) {
+        const task = this.tasks.find(item => item.id === id);
+        if (!task) throw boom.notFound('Task not found');
+        if (task.isBlocked) throw boom.conflict('Task is blocked');
         return task;
     }
 
-    async update(id, changes){
-        const index = this.task.findIndex(item =>item.id === id);
-        if(index === -1){
-           throw boom.notFound('Product not found');
-        }
-        const task = this.task[index];
-        this.task[index] = {
-            ...task,
-            ...changes
-        };
-        return this.task[index];
+    async update(id, changes) {
+        const index = this.tasks.findIndex(item => item.id === id);
+        if (index === -1) throw boom.notFound('Task not found');
+        this.tasks[index] = { ...this.tasks[index], ...changes };
+        return this.tasks[index];
     }
 
-    async delete(id){
-        const index = this.task.findIndex(item =>item.id === id);
-        if(index === -1){
-            throw boom.notFound('Product not found');
-        }
-        this.task.slice(index,1);
-        return{message: true, id};
+    async delete(id) {
+        const index = this.tasks.findIndex(item => item.id === id);
+        if (index === -1) throw boom.notFound('Task not found');
+        this.tasks.splice(index, 1); // Eliminamos la tarea correctamente
+        return { message: 'Task deleted', id };
     }
-
 }
 
 module.exports = TaskService;
