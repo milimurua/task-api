@@ -1,32 +1,42 @@
-const boom = require('@hapi/boom')
-const getConnection = require('../libs/postgres')
+import { v4 as uuidv4 } from 'uuid';
 
+class UserService {
+  constructor() {
+    this.users = [];
+  }
 
-class UserServices {
-    constructor(){}
+  create(data) {
+    const newUser = { id: uuidv4(), ...data };
+    this.users.push(newUser);
+    return newUser;
+  }
 
-    async create(data) {
-        return data
+  findAll() {
+    return this.users;
+  }
+
+  findOne(id) {
+    return this.users.find(user => user.id === id);
+  }
+
+  update(id, changes) {
+    const index = this.users.findIndex(user => user.id === id);
+    if (index === -1) {
+      throw new Error('User not found');
     }
+    const updatedUser = { ...this.users[index], ...changes };
+    this.users[index] = updatedUser;
+    return updatedUser;
+  }
 
-    async find() {
-        const client = await getConnection()
-        const response = await client.query('SELECT *FROM tasks');
-        return (await response).rows;
+  delete(id) {
+    const index = this.users.findIndex(user => user.id === id);
+    if (index === -1) {
+      throw new Error('User not found');
     }
-
-    async findOne(id) {
-        return  { id }
-    }
-
-    async update(id, changes) {
-        return {
-            id,
-            changes
-        }
-    }
-
-    async delete(id){
-        return { id }
-    }
+    const deletedUser = this.users.splice(index, 1);
+    return deletedUser;
+  }
 }
+
+export default UserService;

@@ -13,5 +13,5 @@ async function getConnection(){
     return client
 }
 
-module.exports = getConnection;
+export default getConnection;
 

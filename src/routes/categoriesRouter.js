@@ -1,6 +1,8 @@
-const express = require('express');
+import express from 'express';
+import CategoryService from '../services/categoryService.js';
 
-const router =  express.Router();
+const router = express.Router();
+const service = new CategoryService();
 
 router.get('/:categoryId/task/:taskId', (req, res) => {
     const { categoryId, taskId } = req.params;
@@ -10,4 +12,4 @@ router.get('/:categoryId/task/:taskId', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

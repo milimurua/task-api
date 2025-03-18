@@ -1,14 +1,18 @@
-const express = require('express');
-const TaskService = require('../services/taskServices');
-const validatorHandler = require('../middlewares/validatorHandler');
-const {createTaskSchema, updateTaskSchema, getTaskSchema}= require('../schemas/taskSchemas');
+import express from 'express';
+import TaskService from '../services/taskServices.js';
+import validatorHandler from '../middlewares/validatorHandler.js';
+import { createTaskSchema, updateTaskSchema, getTaskSchema } from '../schemas/taskSchemas.js';
 
-const router =  express.Router();
+const router = express.Router();
 const services = new TaskService();
 
-router.get('/', async (req, res) => {
-    const tasks = await services.find();
-    res.json(tasks);
+router.get('/', async (req, res, next) => {
+    try {
+        const tasks = await services.findAll();
+        res.json(tasks);
+    } catch (error) {
+        next(error);
+    }
 });
 
 router.get('/:id',
@@ -35,6 +39,7 @@ router.post('/',
         }
     }
 );
+
 
 router.patch('/:id',
     validatorHandler(getTaskSchema, 'params'), 
@@ -64,4 +69,4 @@ router.delete('/:id',
     }
 );
 
-module.exports = router;
+export default router;
