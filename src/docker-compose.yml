@@ -3,7 +3,7 @@ version: '3.3'
 services:
   postgres:
     image: postgres:14
-    restart: always
+    container_name: postgres_tasks
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -12,10 +12,11 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -23,7 +24,12 @@ services:
       - '5050:80'
     depends_on:
       - postgres
+    networks:
+      - my_network
 
 volumes:
   postgres_data:
 
+networks:
+  my_network:
+    driver: bridge
