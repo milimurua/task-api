@@ -1,9 +1,8 @@
-import { pool } from '../libs/postgres.js';
+import { sequelize } from '../libs/sequelize.js';
 
 class TaskService {
   constructor() {
-    this.pool = pool;
-    this.pool.on('error', (err) => console.error('Unexpected error on idle client', err));
+    this.sequelize = sequelize;
   }
 
   async create(taskData) {
@@ -22,8 +21,11 @@ class TaskService {
 
   async findAll() {
     try {
-      const result = await this.pool.query('SELECT * FROM tasks');
-      return result.rows;
+      const [data, metadata] = await this.sequelize.query('SELECT * FROM tasks');
+      return {
+        data,
+        metadata
+      };
     } catch (error) {
       console.error('Error fetching tasks:', error);
       throw error;
@@ -32,7 +34,7 @@ class TaskService {
 
   async findOne(id) {
     try {
-      const result = await this.pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
+      const result = await this.sequelize.query('SELECT * FROM tasks WHERE id = $1', [id]);
       if (result.rows.length === 0) {
         throw new Error('Task not found');
       }
@@ -46,7 +48,7 @@ class TaskService {
   async update(id, changes) {
     try {
       const { name, day, book, task } = changes;
-      const result = await this.pool.query(
+      const result = await this.sequelize.query(
         'UPDATE tasks SET name = $1, day = $2, book = $3, task = $4 WHERE id = $5 RETURNING *',
         [name, day, book, task, id]
       );
@@ -62,7 +64,7 @@ class TaskService {
 
   async delete(id) {
     try {
-      const result = await this.pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+      const result = await this.sequelize.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
       if (result.rows.length === 0) {
         throw new Error('Task not found');
       }
